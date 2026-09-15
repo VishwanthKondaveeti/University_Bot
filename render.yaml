@@ -4,7 +4,10 @@ services:
     runtime: python
     plan: free
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
+    # Install deps, then pre-build the vector index at build time. The free runtime
+    # instance (512 MB) cannot bulk-embed ~5,600 chunks, but build machines can; the
+    # resulting ChromaDB files are baked into the image and opened read-only at runtime.
+    buildCommand: pip install -r requirements.txt && python build_index.py
     # main.py reads PORT from the environment in Python, so this does not depend
     # on shell expansion of $PORT at the command line.
     startCommand: python main.py

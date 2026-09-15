@@ -11,7 +11,7 @@ class EmbeddingsDatabase:
     memory footprint small enough for 512 MB hosts (e.g. Render free tier).
     """
 
-    def __init__(self, collection_name: str = "university_regulations", persist_directory: str = None, insert_batch_size: int = 500):
+    def __init__(self, collection_name: str = "university_regulations", persist_directory: str = None, insert_batch_size: int = 100):
         """
         Initialize the embeddings database.
 
