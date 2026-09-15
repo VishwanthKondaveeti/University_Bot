@@ -363,6 +363,6 @@ else:
 st.markdown("---")
 st.markdown("""
 <div style='text-align:center;color:#6b7280;font-size:0.9rem;'>
-    <p>Built with RAG — ChromaDB · Sentence Transformers · Groq Llama3</p>
+    <p>Built with RAG — ChromaDB (ONNX MiniLM embeddings) · Groq LLM</p>
 </div>
 """, unsafe_allow_html=True)

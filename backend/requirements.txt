@@ -3,7 +3,5 @@ uvicorn>=0.30.0
 python-dotenv>=1.0.0
 pypdf
 chromadb
-sentence-transformers
 groq
-tiktoken
 pydantic
