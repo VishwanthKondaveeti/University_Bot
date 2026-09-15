@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: uni-bot-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: GROQ_API_KEY
+        sync: false        # set securely in the Render dashboard
+      - key: GROQ_MODEL
+        value: qwen/qwen3.8-27b
+      # Paths are relative to the service rootDir (backend/), matching local dev.
+      - key: DOCS_DIR
+        value: ../university_docs
+      - key: CHROMA_DIR
+        value: ../chroma_db
+      # Free-tier disk is ephemeral, so rebuild the index automatically on boot.
+      - key: AUTO_LOAD
+        value: "true"
+      # Comma-separated list of allowed frontend origins; "*" only for testing.
+      - key: ALLOWED_ORIGINS
+        sync: false

@@ -1,0 +1,5 @@
+# Streamlit Community Cloud reads requirements.txt from the repo root when the
+# app entrypoint is frontend/app.py. These are the frontend dependencies.
+# The FastAPI backend has its own list in backend/requirements.txt (used by Render).
+streamlit>=1.36
+requests>=2.31

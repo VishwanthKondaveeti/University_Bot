@@ -1,0 +1,4 @@
+# Streamlit Cloud installs these for the frontend app (frontend/app.py).
+# The backend has its own dependency list in backend/requirements.txt.
+streamlit>=1.36
+requests>=2.31
