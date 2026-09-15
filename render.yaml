@@ -5,7 +5,9 @@ services:
     plan: free
     rootDir: backend
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    # main.py reads PORT from the environment in Python, so this does not depend
+    # on shell expansion of $PORT at the command line.
+    startCommand: python main.py
     healthCheckPath: /
     envVars:
       - key: PYTHON_VERSION
