@@ -102,21 +102,37 @@ def _run_document_load():
         )
 
 
+def _init_backend():
+    """Heavy startup work, run off the port-bind path so health checks pass fast."""
+    global db, rag_system
+    try:
+        db = EmbeddingsDatabase()
+        api_key = os.getenv("GROQ_API_KEY", "")
+        rag_system = RAGSystem(db, api_key=api_key if api_key else None)
+        print("Backend initialized successfully")
+
+        # On deployed hosts the disk is often ephemeral, so optionally rebuild
+        # the index automatically when the collection is empty.
+        if AUTO_LOAD and db.get_collection_count() == 0:
+            print("AUTO_LOAD enabled and index empty - loading documents in background")
+            _run_document_load()
+    except Exception as e:
+        print(f"Backend initialization failed: {e}")
+        _set_load_state(
+            status="error",
+            stage="Init failed",
+            error=str(e),
+            message=f"Backend initialization failed: {e}",
+            finished_at=time.time(),
+        )
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
-    global db, rag_system
-    db = EmbeddingsDatabase()
-    api_key = os.getenv("GROQ_API_KEY", "")
-    rag_system = RAGSystem(db, api_key=api_key if api_key else None)
-    print("Backend initialized successfully")
-
-    # On deployed hosts the disk is often ephemeral, so optionally rebuild the
-    # index automatically when the collection is empty.
-    if AUTO_LOAD and db.get_collection_count() == 0:
-        print("AUTO_LOAD enabled and index empty - loading documents in background")
-        threading.Thread(target=_run_document_load, daemon=True).start()
-
+    # Initialize on a background thread: opening Chroma and downloading the
+    # embedding model can take minutes, and blocking here would prevent uvicorn
+    # from binding its port before the host's health/port scan gives up.
+    threading.Thread(target=_init_backend, daemon=True).start()
     yield
     # Shutdown
     print("Backend shutting down")
